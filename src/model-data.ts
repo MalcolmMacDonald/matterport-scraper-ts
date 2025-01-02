@@ -27,33 +27,26 @@ export interface Assets {
 
 export interface Mesh {
     id:         string;
-    status:     Status;
+    status:     "available";
     filename:   string;
     format:     string;
     resolution: string;
     url:        string;
     validUntil: Date;
 }
-
-export enum Status {
-    Available = "available",
-}
+export type MeshResolution = "50k" | "500k";
 
 export interface Texture {
     id:          string;
-    status:      Status;
+    status:      "available";
     format:      string;
-    resolution:  string;
+    resolution:  MeshResolution;
     quality:     Quality;
     urlTemplate: string;
     validUntil:  Date;
 }
 
-export enum Quality {
-    High = "high",
-    Low = "low",
-    The2K = "2k",
-}
+export type Quality = "2k" | "high" | "low";
 
 export interface FloorElement {
     id:              string;
@@ -77,7 +70,7 @@ export interface Image {
     width:            number;
     created:          Date;
     modified:         Date;
-    status:           Status;
+    status:           "available";
     filename:         string;
     format:           string;
     url:              string;
@@ -106,11 +99,7 @@ export interface Anchor {
 
 export interface AnchorPano {
     id:        string;
-    placement: TourPanDirection;
-}
-
-export enum TourPanDirection {
-    Auto = "auto",
+    placement: "auto";
 }
 
 export interface Tion {
@@ -148,8 +137,8 @@ export interface LocationPano {
     id:          string;
     sweepUuid:   string;
     label:       string;
-    placement:   TourPanDirection;
-    source:      Source;
+    placement:   "auto";
+    source:      "vision";
     position:    Tion;
     rotation:    Tion;
     resolutions: Quality[];
@@ -158,7 +147,7 @@ export interface LocationPano {
 
 export interface Skybox {
     resolution:      Quality;
-    status:          Status;
+    status:          "available";
     urlTemplate:     string;
     tileResolution:  string;
     tileCount:       number;
@@ -166,14 +155,7 @@ export interface Skybox {
     validUntil:      Date;
 }
 
-export enum Source {
-    Vision = "vision",
-}
-
-export enum Tag {
-    Showcase = "showcase",
-    VR = "vr",
-}
+export type Tag = "vr" | "showcase";
 
 export interface Lod {
     options: string[];
@@ -198,7 +180,7 @@ export interface ModelDataOptions {
     tourDollhousePanSpeed:      number;
     tourFastTransitionsEnabled: boolean;
     tourPanAngle:               number;
-    tourPanDirection:           TourPanDirection;
+    tourPanDirection:           "auto";
     tourPanSpeed:               number;
     tourTransitionSpeed:        number;
     tourTransitionTime:         number;
