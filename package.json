@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/pbf": "^3.0.5",
     "commander": "^13.0.0",
+    "jimp": "^1.6.0",
     "pbf": "^4.0.1",
     "puppeteer": "^23.11.1",
     "puppeteer-extra": "^3.3.6"

@@ -1,7 +1,7 @@
 import {Command} from "commander";
 import {PuppeteeredMatterportPage} from "./puppeteered-matterport-page.ts";
 import fs from "fs";
-import {downloadOBJ} from "./components/model-file.ts";
+import {downloadTextures} from "./components/textures.ts";
 
 
 const program = new Command();
@@ -30,8 +30,10 @@ let outputData = {};
 if (!fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory);
 }
-await downloadOBJ(modelData, outputData, `${outputDirectory}/Model.obj`);
+fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, null, 2));
 
+//await downloadOBJ(modelData, outputData, `${outputDirectory}/Model.obj`);
+await downloadTextures(modelData, `${outputDirectory}/Textures`);
 
 
 
