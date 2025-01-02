@@ -1,0 +1,21 @@
+{
+  "name": "matterport-scraper-ts",
+  "module": "./src/cli.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun ./src/cli.ts -i \"https://my.matterport.com/show/?m=A18f6A8rh6e&mls=1\"",
+    "build": "bun build ./src/cli.ts --compile --outfile ./build/matterport-scraper",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "commander": "^13.0.0",
+    "puppeteer": "^23.11.1",
+    "puppeteer-extra": "^3.3.6"
+  }
+}
