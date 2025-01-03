@@ -1,4 +1,4 @@
-import type {MeshResolution, ModelData} from "../model-data.ts";
+import type {MeshResolution, ModelData} from "../matterport/model-data.ts";
 import Pbf from "pbf";
 
 const damProto = require('../damProto.js').DAMFile;

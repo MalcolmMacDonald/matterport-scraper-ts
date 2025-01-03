@@ -1,6 +1,6 @@
 import fs from "fs";
 import {Jimp} from "jimp";
-import type {ModelData, TextureQuality} from "../model-data.ts";
+import type {ModelData, TextureQuality} from "../matterport/model-data.ts";
 
 const textureScale = 1;
 const textureSize = 2048;
@@ -18,9 +18,8 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
 
     if (fs.existsSync(texturesDirectory)) {
         fs.rmdirSync(texturesDirectory, {recursive: true});
-    } else {
-        fs.mkdirSync(texturesDirectory);
     }
+    fs.mkdirSync(texturesDirectory);
 
     let material = 0;
     let materialIsValid = true;

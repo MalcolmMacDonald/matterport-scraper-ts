@@ -1,7 +1,7 @@
 import {Command} from "commander";
-import {PuppeteeredMatterportPage} from "./puppeteered-matterport-page.ts";
+import {PuppeteeredMatterportPage} from "./matterport/puppeteered-matterport-page.ts";
 import fs from "fs";
-import {downloadTextures} from "./components/textures.ts";
+import {downloadOBJ} from "./components";
 
 
 const program = new Command();
@@ -25,7 +25,6 @@ const url = `https://my.matterport.com/show/?m=${id}`;
 var puppeteeredMatterportPage = new PuppeteeredMatterportPage(url);
 await puppeteeredMatterportPage.initialize();
 const modelData = puppeteeredMatterportPage.modelData;
-let outputData = {};
 
 if (!fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory);
@@ -33,7 +32,10 @@ if (!fs.existsSync(outputDirectory)) {
 fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, null, 2));
 
 //await downloadOBJ(modelData, outputData, `${outputDirectory}/Model.obj`);
-await downloadTextures(modelData, `${outputDirectory}/Textures`);
+//await downloadTextures(modelData, `${outputDirectory}/Textures`);
+//await getSweeps(modelData, `${outputDirectory}/SweepData.json`);
+//await getPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`);
+//await downloadPanoramas(modelData, `${outputDirectory}/Panoramas`);
 
 
-
+await puppeteeredMatterportPage.close();
