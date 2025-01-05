@@ -16,42 +16,45 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
         fs.rmdirSync(texturesDirectory, {recursive: true});
     }
     fs.mkdirSync(texturesDirectory);
-
-    let material = 0;
-    let materialIsValid = true;
+    let materialIndex = 0;
     let urlTemplate = model.assets.textures.find(texture => texture.quality == textureQuality)?.urlTemplate as string;
-    let textureStepSize = textureChunkSize / textureSize;
     let assetID = urlTemplate.split('?')[0].split('/').slice(-1)[0].split('_')[0];
-    while (materialIsValid) {
-        const image = new Jimp({width: textureSize * textureScale, height: textureSize * textureScale});
-        let fileCount = 0;
-        const materialIndex = material.toString().padStart(3, '0');
-        const promises = [];
-        for (let x = 0; x < 1; x += textureStepSize) {
-            for (let y = 0; y < 1; y += textureStepSize) {
-                const newURL = urlTemplate.replace('<texture>', materialIndex) + `&crop=${textureChunkSize},${textureChunkSize},x${x},y${y}&imgopt=1`;
-
-                fileCount++;
-                promises.push(blitTextureChunk(image, x, y, newURL).then(null,
-                    () => {
-                        materialIsValid = false;
-                    }));
-            }
-        }
-        await Promise.all(promises);
-        if (!materialIsValid) {
-            break;
-        }
+    let stitchedTexturePromises = [];
+    while (true) {
+        const materialIndexText = materialIndex.toString().padStart(3, '0');
         let fileName = `${assetID}_50k_${materialIndex}`;
         let finalFilePath = `${texturesDirectory}/${fileName}`;
-        await image.write(`${finalFilePath}.png`);
-        material++;
+        let url = urlTemplate.replace('<texture>', materialIndexText);
+        let testURL = url + `&crop=${textureChunkSize},${textureChunkSize},x0,y0&imgopt=1`;
+        const responseCode = await fetch(testURL, {method: 'HEAD'}).then(response => response.status);
+        console.log(testURL)
+        if (responseCode != 200) {
+            break;
+        }
+        let promise = downloadStitchedTexture(materialIndexText, url, finalFilePath);
+        stitchedTexturePromises.push(promise);
+        materialIndex++;
     }
+    await Promise.all(stitchedTexturePromises);
 
     console.log("Completed downloading textures");
     console.timeEnd("Textures");
 }
 
+async function downloadStitchedTexture(materialIndex: string, url: string, filePath: string) {
+    const image = new Jimp({width: textureSize * textureScale, height: textureSize * textureScale});
+    let textureStepSize = textureChunkSize / textureSize;
+    const promises = [];
+
+    for (let x = 0; x < 1; x += textureStepSize) {
+        for (let y = 0; y < 1; y += textureStepSize) {
+            const newURL = url + `&crop=${textureChunkSize},${textureChunkSize},x${x},y${y}&imgopt=1`;
+            promises.push(blitTextureChunk(image, x, y, newURL));
+        }
+    }
+    await Promise.all(promises);
+    await image.write(`${filePath}.png`);
+}
 
 async function blitTextureChunk(fullImage, x, y, imageURL) {
 
