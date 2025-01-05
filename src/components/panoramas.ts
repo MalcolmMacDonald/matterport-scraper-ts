@@ -16,24 +16,20 @@ export async function downloadPanoramas(model: ModelData, targetDirectory: strin
     fs.mkdirSync(targetDirectory);
     const locations = model.locations;
 
-    let texturePromises = [];
+    const texturePromises = [];
     for (let sweepIndex = 0; sweepIndex < locations.length; sweepIndex++) {
-        let promises = [];
+        const promises = [];
 
-        let image = new Jimp({width: panoramaSize * 4, height: panoramaSize * 3});
-        let fileCount = 0;
-        let location = locations[sweepIndex].pano;
-        let UUID = location.sweepUuid.replace(/-/g, '');
+        const image = new Jimp({width: panoramaSize * 4, height: panoramaSize * 3});
+        const location = locations[sweepIndex].pano;
+        const UUID = location.sweepUuid.replace(/-/g, '');
 
         const textureIndex = location.skyboxes.findIndex(skybox => skybox.resolution == panoramaResolution);
 
-        let urlTemplate = location.skyboxes[textureIndex].tileUrlTemplate;
+        const urlTemplate = location.skyboxes[textureIndex].tileUrlTemplate;
 
-        for (var cubeMapIndex = 0; cubeMapIndex < 6; cubeMapIndex++) {
-            var newURL = urlTemplate.replace('<face>', cubeMapIndex.toString()).replace('<x>', '0').replace('<y>', '0') + `&imgopt=1`;
-
-            fileCount++;
-
+        for (let cubeMapIndex = 0; cubeMapIndex < 6; cubeMapIndex++) {
+            const newURL = urlTemplate.replace('<face>', cubeMapIndex.toString()).replace('<x>', '0').replace('<y>', '0') + `&imgopt=1`;
             promises.push(downloadCubemapTexture(image, cubeMapIndex, newURL));
 
         }
@@ -42,13 +38,12 @@ export async function downloadPanoramas(model: ModelData, targetDirectory: strin
         }));
     }
     await Promise.all(texturePromises);
-    console.log("Completed downloading panoramas");
     console.timeEnd("Panoramas");
 }
 
 async function downloadCubemapTexture(image, index, imageURL) {
 
-    var positions = [
+    const positions = [
         [panoramaSize, 0],
         [panoramaSize, panoramaSize],
         [panoramaSize * 2, panoramaSize],

@@ -4,20 +4,19 @@ import fs from "fs";
 export async function downloadSweeps(model: ModelData, outputPath: string) {
     console.log("Downloading sweeps");
     console.time("Sweeps");
-    var sweepURL = `https://my.matterport.com/api/v2/models/${model.id}/sweeps?tag=showcase`;
+    const sweepURL = `https://my.matterport.com/api/v2/models/${model.id}/sweeps?tag=showcase`;
     const response = await fetch(sweepURL);
     const sweepJSON = await response.json();
-    var positions = [];
-    for (var i = 0; i < sweepJSON.length; i++) {
+    const positions = [];
+    for (let i = 0; i < sweepJSON.length; i++) {
         if (sweepJSON[i].room_index == -1) {
             continue;
         }
-        var position = sweepJSON[i].position;
-        var rotation = sweepJSON[i].rotation;
-        var uuid = sweepJSON[i].sweep_uuid.replace(/-/g, '');
+        const position = sweepJSON[i].position;
+        const rotation = sweepJSON[i].rotation;
+        const uuid = sweepJSON[i].sweep_uuid.replace(/-/g, '');
         positions.push({position, rotation, uuid});
     }
     fs.writeFileSync(outputPath, JSON.stringify(positions, null, 2));
-    console.log("Completed downloading sweeps");
     console.timeEnd("Sweeps");
 }

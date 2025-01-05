@@ -1,9 +1,8 @@
 import type {MeshResolution, ModelData} from "../matterport/model-data.ts";
-import Pbf from "pbf";
+import Pbf from "pbf"
+import fs from "fs";
 
-const damProto = require('../matterport/damProto.js').DAMFile;
-const fs = require('fs');
-
+import {DAMFile as damProto} from "../matterport/damProto.js";
 
 export async function downloadOBJ(modelData: ModelData, path: string) {
     console.log("Downloading OBJ");
@@ -16,28 +15,28 @@ export async function downloadOBJ(modelData: ModelData, path: string) {
     const response: Response = await fetch(mesh.url);
     const buffer = await response.arrayBuffer();
     const foundPbf = new Pbf(buffer);
-    const obj: any = damProto.read(foundPbf);
+    const obj: unknown = damProto.read(foundPbf);
     const objFileText: string = buildOBJ(modelData, obj);
     fs.writeFileSync(path, objFileText);
     console.timeEnd("OBJ");
 }
 
 
+
 function buildOBJ(model: ModelData, obj) {
 
-    var objFileText = "";
+    let objFileText = "";
+    let totalVerts = 0;
+    let totalUVs = 0;
 
-    var totalVerts = 0;
-    var totalUVs = 0;
-    var chunkCount = 0;
 
     obj.chunk.forEach(chunk => {
-        var materialName = chunk.material_name.split(".")[0];
+        const materialName = chunk.material_name.split(".")[0];
         objFileText += `g ${materialName} \n`;
-        var vertices = [];
-        var uvs = [];
-        var faceIndices = [];
-        var uvIndices = [];
+        const vertices = [];
+        const uvs = [];
+        const faceIndices = [];
+        const uvIndices = [];
         chunk.vertices.xyz.forEach(vert => vertices.push(vert));
         chunk.vertices.uv.forEach(uv => uvs.push(uv));
 
@@ -48,18 +47,17 @@ function buildOBJ(model: ModelData, obj) {
 
         totalVerts += chunk.vertices.xyz.length / 3;
         totalUVs += (chunk.vertices.xyz.length / 3);
-        chunkCount++;
-        for (var j = 0; j < vertices.length; j += 3) {
-            var thisString = `v ${-vertices[j]} ${vertices[j + 2]} ${vertices[j + 1]}\n`;
+        for (let j = 0; j < vertices.length; j += 3) {
+            const thisString = `v ${-vertices[j]} ${vertices[j + 2]} ${vertices[j + 1]}\n`;
             objFileText += thisString;
         }
-        for (var j = 0; j < uvs.length; j += 2) {
-            var thisString = `vt ${uvs[j]} ${uvs[j + 1]}\n`;
+        for (let j = 0; j < uvs.length; j += 2) {
+            const thisString = `vt ${uvs[j]} ${uvs[j + 1]}\n`;
             objFileText += thisString;
         }
 
-        for (var j = 0; j < faceIndices.length; j += 3) {
-            var thisString = `f ${faceIndices[j]}/${uvIndices[j]} ${faceIndices[j + 1]}/${uvIndices[j + 1]} ${faceIndices[j + 2]}/${uvIndices[j + 2]}\n`;
+        for (let j = 0; j < faceIndices.length; j += 3) {
+            const thisString = `f ${faceIndices[j]}/${uvIndices[j]} ${faceIndices[j + 1]}/${uvIndices[j + 1]} ${faceIndices[j + 2]}/${uvIndices[j + 2]}\n`;
             objFileText += thisString;
         }
     });
