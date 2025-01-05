@@ -54,20 +54,8 @@ export class PuppeteeredMatterportPage {
         abortController.abort();
         prefetchedModelData.assets.meshes = validMeshes;
         let meshQualities = prefetchedModelData.assets.meshes.map(mesh => mesh.resolution);
-        console.log("Mesh qualities: ", meshQualities);
-
         this.modelData = prefetchedModelData;
     }
-
-    /*    interceptRequest(interceptedRequest: EventsWithWildcard<PageEvents>["request"]) {
-            if (interceptedRequest.url().startsWith(modelDataURLPrefix)) {
-                const interceptedData = interceptedRequest.url();
-                fetch(interceptedData).then(response => response.json()).then(data => {
-                    this.modelData = data.data.model;
-                    console.log("Model data loaded");
-                });
-            }
-        }*/
 
     async close() {
         await this.page.close();

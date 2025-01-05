@@ -27,7 +27,6 @@ let id = options.input.match(/(?<=\?m=)[^&]+/)[0];
 id = id.replace(/"/g, '');
 console.log(`Scraping Matterport model with id ${id}`);
 const outputDirectory = options.output != null ? `${options.output}/${id}` : `./${id}`;
-const saveAsZip = options.zip ?? false;
 
 const url = `https://my.matterport.com/show/?m=${id}`;
 

@@ -21,18 +21,16 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
     let assetID = urlTemplate.split('?')[0].split('/').slice(-1)[0].split('_')[0];
     let stitchedTexturePromises = [];
     while (true) {
-        const materialIndexText = materialIndex.toString().padStart(3, '0');
+        let materialIndexText = materialIndex.toString().padStart(3, '0');
         let fileName = `${assetID}_50k_${materialIndex}`;
         let finalFilePath = `${texturesDirectory}/${fileName}`;
         let url = urlTemplate.replace('<texture>', materialIndexText);
         let testURL = url + `&crop=${textureChunkSize},${textureChunkSize},x0,y0&imgopt=1`;
-        const responseCode = await fetch(testURL, {method: 'HEAD'}).then(response => response.status);
-        console.log(testURL)
+        let responseCode = await fetch(testURL, {method: 'HEAD'}).then(response => response.status);
         if (responseCode != 200) {
             break;
         }
-        let promise = downloadStitchedTexture(materialIndexText, url, finalFilePath);
-        stitchedTexturePromises.push(promise);
+        stitchedTexturePromises.push(downloadStitchedTexture(materialIndexText, url, finalFilePath));
         materialIndex++;
     }
     await Promise.all(stitchedTexturePromises);
@@ -42,13 +40,13 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
 }
 
 async function downloadStitchedTexture(materialIndex: string, url: string, filePath: string) {
-    const image = new Jimp({width: textureSize * textureScale, height: textureSize * textureScale});
+    let image = new Jimp({width: textureSize * textureScale, height: textureSize * textureScale});
     let textureStepSize = textureChunkSize / textureSize;
-    const promises = [];
+    let promises = [];
 
     for (let x = 0; x < 1; x += textureStepSize) {
         for (let y = 0; y < 1; y += textureStepSize) {
-            const newURL = url + `&crop=${textureChunkSize},${textureChunkSize},x${x},y${y}&imgopt=1`;
+            let newURL = url + `&crop=${textureChunkSize},${textureChunkSize},x${x},y${y}&imgopt=1`;
             promises.push(blitTextureChunk(image, x, y, newURL));
         }
     }
@@ -58,7 +56,10 @@ async function downloadStitchedTexture(materialIndex: string, url: string, fileP
 
 async function blitTextureChunk(fullImage, x, y, imageURL) {
 
-    const jimpImage = await Jimp.read(imageURL);
+
+    let jimpImage = await Jimp.read(imageURL);
     jimpImage.scale(textureScale);
-    fullImage.blit(jimpImage, x * textureSize * textureScale, y * textureSize * textureScale);
+    let newX = x * textureSize * textureScale;
+    let newY = y * textureSize * textureScale;
+    fullImage.blit({src: jimpImage, x: newX, y: newY});
 }
