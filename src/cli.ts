@@ -1,14 +1,7 @@
 import {Command} from "commander";
 import {PuppeteeredMatterportPage} from "./matterport/puppeteered-matterport-page.ts";
 import fs from "fs";
-import {
-    downloadContents,
-    downloadOBJ,
-    downloadPanoramas,
-    downloadPreviewImage,
-    downloadSweeps,
-    downloadTextures
-} from "./components";
+import {downloadTextures} from "./components";
 
 
 const program = new Command();
@@ -43,13 +36,13 @@ fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, 
 
 console.time("Entire scraping process");
 await Promise.all([
-    downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
+    //downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
     downloadTextures(modelData, `${outputDirectory}/Textures`),
-    downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
-    downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
-    downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
+    // downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
+    // downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
+//downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
 ]);
-await downloadContents(modelData, outputDirectory, `${outputDirectory}/Contents.json`);
+//await downloadContents(modelData, outputDirectory, `${outputDirectory}/Contents.json`);
 console.log("Completed scraping Matterport model");
 console.timeEnd("Entire scraping process");
 

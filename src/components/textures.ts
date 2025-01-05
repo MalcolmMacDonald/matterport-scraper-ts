@@ -4,7 +4,7 @@ import type {ModelData, TextureQuality} from "../matterport/model-data.ts";
 
 const textureScale = 1;
 const textureSize = 2048;
-const textureQuality: TextureQuality = "high";
+const textureQuality: TextureQuality = "low";
 const textureChunkSize = 512;
 
 export async function downloadTextures(model: ModelData, texturesDirectory: string) {
@@ -26,6 +26,7 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
         let finalFilePath = `${texturesDirectory}/${fileName}`;
         let url = urlTemplate.replace('<texture>', materialIndexText);
         let testURL = url + `&crop=${textureChunkSize},${textureChunkSize},x0,y0&imgopt=1`;
+        console.log(testURL);
         let responseCode = await fetch(testURL, {method: 'HEAD'}).then(response => response.status);
         if (responseCode != 200) {
             break;

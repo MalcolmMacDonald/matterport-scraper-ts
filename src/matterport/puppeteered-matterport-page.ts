@@ -1,6 +1,6 @@
 import type {Page} from "puppeteer";
 import {Browser, HTTPResponse} from "puppeteer";
-import {Mesh, ModelData} from "./model-data.ts";
+import {Mesh, ModelData, Texture} from "./model-data.ts";
 
 const PuppeteerExtra = require("puppeteer-extra");
 const modelDataURLPrefix = "https://my.matterport.com/api/mp/models/graph?operationName=GetModelDetails";
@@ -27,6 +27,17 @@ export class PuppeteeredMatterportPage {
         return validMeshes;
     }
 
+    async validateTextures(inputTextures: Texture[]) {
+        let validTextures = [];
+        for (let texture of inputTextures) {
+            let response = await fetch(texture.urlTemplate.replace('<texture>', '000'));
+            if (response.status === 200) {
+                validTextures.push(texture);
+            }
+        }
+        return validTextures;
+    }
+
     async initialize() {
         this.browser = await PuppeteerExtra.launch({
             "headless": true
@@ -38,6 +49,7 @@ export class PuppeteeredMatterportPage {
             timeout: 2500,
             signal: abortController.signal
         });
+
         modelDetailsPromise.catch(() => {
         });
         await this.page.goto(this.url);
@@ -46,14 +58,16 @@ export class PuppeteeredMatterportPage {
 
         let allMeshes = prefetchedModelData.assets.meshes;
         let validMeshes = await this.validateMeshes(allMeshes);
+        let validTextures = await this.validateTextures(prefetchedModelData.assets.textures);
         if (validMeshes.length === 0) {
             const foundResponse = await modelDetailsPromise;
             const liveModelData = JSON.parse((await foundResponse.buffer()).toString()).data.model as ModelData;
             validMeshes = await this.validateMeshes(liveModelData.assets.meshes);
+            validTextures = await this.validateTextures(liveModelData.assets.textures);
         }
         abortController.abort();
         prefetchedModelData.assets.meshes = validMeshes;
-        let meshQualities = prefetchedModelData.assets.meshes.map(mesh => mesh.resolution);
+        prefetchedModelData.assets.textures = validTextures;
         this.modelData = prefetchedModelData;
     }
 
