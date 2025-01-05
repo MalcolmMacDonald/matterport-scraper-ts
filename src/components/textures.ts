@@ -45,14 +45,9 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
         let fileName = `${assetID}_50k_${materialIndex}`;
         let finalFilePath = `${texturesDirectory}/${fileName}`;
         await image.write(`${finalFilePath}.png`);
-        //model.texturePaths.push(fileName);
         material++;
     }
-    /*        
-    for (var i = 0; i < model.texturePaths.length; i++) {
-        var fileSize = fs.lstatSync(utility.getScanAssetPath(model, `${config.texturesFolder}/${model.texturePaths[i]}`));
-        model.size += fileSize.size;
-    }*/
+
     console.log("Completed downloading textures");
     console.timeEnd("Textures");
 }
@@ -60,8 +55,6 @@ export async function downloadTextures(model: ModelData, texturesDirectory: stri
 
 async function blitTextureChunk(fullImage, x, y, imageURL) {
 
-
-    //const jimpImage = await Jimp.create(imageURL);
     const jimpImage = await Jimp.read(imageURL);
     jimpImage.scale(textureScale);
     fullImage.blit(jimpImage, x * textureSize * textureScale, y * textureSize * textureScale);

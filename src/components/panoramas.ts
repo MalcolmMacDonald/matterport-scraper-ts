@@ -57,7 +57,7 @@ async function downloadCubemapTexture(image, index, imageURL) {
         [panoramaSize, panoramaSize * 2]
     ]
     const response = await fetch(imageURL);
-    if (response.status === 403) {
+    if (response.status != 200) {
         return;
     }
     const buffer = await response.arrayBuffer();

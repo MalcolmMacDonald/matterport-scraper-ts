@@ -1,6 +1,6 @@
 import type {Page} from "puppeteer";
 import {Browser, HTTPResponse} from "puppeteer";
-import {ModelData} from "./model-data.ts";
+import {Mesh, ModelData} from "./model-data.ts";
 
 const PuppeteerExtra = require("puppeteer-extra");
 const modelDataURLPrefix = "https://my.matterport.com/api/mp/models/graph?operationName=GetModelDetails";
@@ -14,6 +14,17 @@ export class PuppeteeredMatterportPage {
     constructor(url: string) {
         this.url = url;
 
+    }
+
+    async validateMeshes(inputMeshes: Mesh[]) {
+        let validMeshes = [];
+        for (let mesh of inputMeshes) {
+            let response = await fetch(mesh.url);
+            if (response.status === 200) {
+                validMeshes.push(mesh);
+            }
+        }
+        return validMeshes;
     }
 
     async initialize() {
@@ -34,17 +45,11 @@ export class PuppeteeredMatterportPage {
         let prefetchedModelData = await this.page.evaluate(() => (window["MP_PREFETCHED_MODELDATA"].queries.GetModelPrefetch.data.model) as ModelData);
 
         let allMeshes = prefetchedModelData.assets.meshes;
-        let validMeshes = [];
-        for (let mesh of allMeshes) {
-            let response = await fetch(mesh.url);
-            if (response.status === 200) {
-                validMeshes.push(mesh);
-            }
-        }
+        let validMeshes = await this.validateMeshes(allMeshes);
         if (validMeshes.length === 0) {
             const foundResponse = await modelDetailsPromise;
-            const liveModelData = JSON.parse((await foundResponse.buffer()).toString()) as ModelData;
-            validMeshes = liveModelData.assets.meshes;
+            const liveModelData = JSON.parse((await foundResponse.buffer()).toString()).data.model as ModelData;
+            validMeshes = await this.validateMeshes(liveModelData.assets.meshes);
         }
         abortController.abort();
         prefetchedModelData.assets.meshes = validMeshes;

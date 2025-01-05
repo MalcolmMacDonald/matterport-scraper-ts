@@ -35,16 +35,23 @@ var puppeteeredMatterportPage = new PuppeteeredMatterportPage(url);
 await puppeteeredMatterportPage.initialize();
 const modelData = puppeteeredMatterportPage.modelData;
 
-if (!fs.existsSync(outputDirectory)) {
-    fs.mkdirSync(outputDirectory);
+if (fs.existsSync(outputDirectory)) {
+    fs.rmdirSync(outputDirectory, {recursive: true});
 }
+fs.mkdirSync(outputDirectory);
+
 fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, null, 2));
 
-await downloadOBJ(modelData, `${outputDirectory}/Model.obj`);
-await downloadTextures(modelData, `${outputDirectory}/Textures`);
-await downloadSweeps(modelData, `${outputDirectory}/SweepData.json`);
-await downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`);
-await downloadPanoramas(modelData, `${outputDirectory}/Panoramas`);
+console.time("Entire scraping process");
+await Promise.all([
+    downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
+    downloadTextures(modelData, `${outputDirectory}/Textures`),
+    downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
+    downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
+    downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
+]);
 await downloadContents(modelData, outputDirectory, `${outputDirectory}/Contents.json`);
+console.log("Completed scraping Matterport model");
+console.timeEnd("Entire scraping process");
 
 await puppeteeredMatterportPage.close();

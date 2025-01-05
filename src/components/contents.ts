@@ -33,4 +33,5 @@ export async function downloadContents(modelData: ModelData, targetDirectory: st
     }
     fs.writeFileSync(targetPath, JSON.stringify(contents, null, 2));
     console.timeEnd("Contents.json");
+    console.log(`Total Size: ${(fileSize / 1048576).toFixed(2)} mb`);
 }
