@@ -30,7 +30,7 @@ export interface Mesh {
     status: "available";
     filename: string;
     format: string;
-    resolution: string;
+    resolution: MeshResolution;
     url: string;
     validUntil: Date;
 }

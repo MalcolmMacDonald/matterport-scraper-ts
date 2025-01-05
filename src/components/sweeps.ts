@@ -1,7 +1,9 @@
 import type {ModelData} from "../matterport/model-data.ts";
 import fs from "fs";
 
-export async function getSweeps(model: ModelData, outputPath: string) {
+export async function downloadSweeps(model: ModelData, outputPath: string) {
+    console.log("Downloading sweeps");
+    console.time("Sweeps");
     var sweepURL = `https://my.matterport.com/api/v2/models/${model.id}/sweeps?tag=showcase`;
     const response = await fetch(sweepURL);
     const sweepJSON = await response.json();
@@ -16,4 +18,6 @@ export async function getSweeps(model: ModelData, outputPath: string) {
         positions.push({position, rotation, uuid});
     }
     fs.writeFileSync(outputPath, JSON.stringify(positions, null, 2));
+    console.log("Completed downloading sweeps");
+    console.timeEnd("Sweeps");
 }

@@ -9,11 +9,7 @@ const textureChunkSize = 512;
 
 export async function downloadTextures(model: ModelData, texturesDirectory: string) {
 
-    /*        
-    if (!config.downloadFlags.textures) {
-        resolve();
-        return;
-    }*/
+    console.log("Downloading textures");
     console.time("Textures")
 
     if (fs.existsSync(texturesDirectory)) {

@@ -1,22 +1,36 @@
 import type {MeshResolution, ModelData} from "../matterport/model-data.ts";
 import Pbf from "pbf";
 
-const damProto = require('../damProto.js').DAMFile;
+const damProto = require('../matterport/damProto.js').DAMFile;
 const fs = require('fs');
 
 
-export async function downloadOBJ(modelData: ModelData, outputData: any, path: string) {
+export async function downloadOBJ(modelData: ModelData, path: string) {
+    console.log("Downloading OBJ");
+    console.time("OBJ");
     const meshResolution: MeshResolution = "50k";
     const mesh = modelData.assets.meshes.find(mesh => mesh.resolution === meshResolution);
     if (!mesh) {
         throw new Error(`Could not find mesh with resolution ${meshResolution}`);
     }
     const response: Response = await fetch(mesh.url);
+
+
+    /*    let promises: Promise<Response>[] = [];
+        modelData.assets.meshes.forEach(mesh => {
+            promises.push(fetch(mesh.url));
+        });
+        let responses: Response[] = await Promise.all(promises);
+        let firstValidResponse: Response = responses.find(response => response.status === 200) as Response;
+        if (!firstValidResponse) {
+            throw new Error("Could not download mesh");
+        }*/
     const buffer = await response.arrayBuffer();
     const foundPbf = new Pbf(buffer);
     const obj: any = damProto.read(foundPbf);
     const objFileText: string = buildOBJ(modelData, obj);
     fs.writeFileSync(path, objFileText);
+    console.timeEnd("OBJ");
 }
 
 

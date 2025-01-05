@@ -7,7 +7,7 @@ const panoramaResolution: TextureQuality = 'low';
 
 export async function downloadPanoramas(model: ModelData, targetDirectory: string) {
 
-
+    console.log("Downloading panoramas");
     console.time("Panoramas")
 
     if (fs.existsSync(targetDirectory)) {
