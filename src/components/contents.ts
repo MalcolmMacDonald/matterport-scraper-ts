@@ -38,13 +38,15 @@ export async function downloadContents(modelData: ModelData, targetDirectory: st
             position: modelData.image.snapshotLocation.position,
             rotation: modelData.image.snapshotLocation.rotation
         },
-        size: fileSize
+        size: fileSize,
+        texturePaths: [],
+        panoramaPaths: []
     };
     if (fs.existsSync(`${targetDirectory}/Textures`)) {
-        contents['texturePaths'] = fs.readdirSync(`${targetDirectory}/Textures`, {withFileTypes: true}).map((texturePath) => `./Textures/${texturePath.name}`);
+        contents.texturePaths = fs.readdirSync(`${targetDirectory}/Textures`, {withFileTypes: true}).map((texturePath) => `./Textures/${texturePath.name}`);
     }
     if (fs.existsSync(`${targetDirectory}/Panoramas`)) {
-        contents['panoramaPaths'] = fs.readdirSync(`${targetDirectory}/Panoramas`, {withFileTypes: true}).map((panoramaPath) => `./Panoramas/${panoramaPath.name}`);
+        contents.panoramaPaths = fs.readdirSync(`${targetDirectory}/Panoramas`, {withFileTypes: true}).map((panoramaPath) => `./Panoramas/${panoramaPath.name}`);
     }
 
     fs.writeFileSync(targetPath, JSON.stringify(contents, null, 2));

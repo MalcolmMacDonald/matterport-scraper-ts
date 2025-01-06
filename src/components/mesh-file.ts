@@ -2,10 +2,10 @@ import type {MeshResolution, ModelData} from "../matterport/model-data.ts";
 import Pbf from "pbf"
 import fs from "fs";
 
-import {DAMFile as damProto} from "../matterport/damProto.js";
+const damProto = require("../matterport/damProto.js").DAMFile;
 
 export async function downloadOBJ(modelData: ModelData, path: string) {
-    console.log("Downloading OBJ");
+    //console.log("Downloading OBJ");
     console.time("OBJ");
     const meshResolution: MeshResolution = "50k";
     const mesh = modelData.assets.meshes.find(mesh => mesh.resolution === meshResolution);
@@ -20,7 +20,6 @@ export async function downloadOBJ(modelData: ModelData, path: string) {
     fs.writeFileSync(path, objFileText);
     console.timeEnd("OBJ");
 }
-
 
 
 function buildOBJ(model: ModelData, obj) {

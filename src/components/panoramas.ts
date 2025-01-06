@@ -11,7 +11,7 @@ export async function downloadPanoramas(model: ModelData, targetDirectory: strin
     console.time("Panoramas")
 
     if (fs.existsSync(targetDirectory)) {
-        fs.rmdirSync(targetDirectory, {recursive: true});
+        fs.rmdirSync(targetDirectory, {recursive: true, force: true});
     }
     fs.mkdirSync(targetDirectory);
     const locations = model.locations;
@@ -19,7 +19,7 @@ export async function downloadPanoramas(model: ModelData, targetDirectory: strin
     const texturePromises = [];
     for (let sweepIndex = 0; sweepIndex < locations.length; sweepIndex++) {
         const promises = [];
-
+        
         const image = new Jimp({width: panoramaSize * 4, height: panoramaSize * 3});
         const location = locations[sweepIndex].pano;
         const UUID = location.sweepUuid.replace(/-/g, '');
