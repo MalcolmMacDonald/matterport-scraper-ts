@@ -1,7 +1,7 @@
 import {Command} from "commander";
 import {PuppeteeredMatterportPage} from "./matterport/puppeteered-matterport-page.ts";
 import fs from "fs";
-import {downloadContents, downloadPanoramas} from "./components";
+import {downloadContents} from "./components";
 import {downloadGLTF} from "./components/mesh-file.ts";
 
 
@@ -20,7 +20,6 @@ const options = program.opts();
 let id = options.input.match(/(?<=\?m=)[^&]+/)[0];
 id = id.replace(/"/g, '');
 console.log(`Scraping Matterport model with id ${id}`);
-const outputDirectory = options.output != null ? `${options.output}/${id}` : `./${id}`;
 
 const url = `https://my.matterport.com/show/?m=${id}`;
 
@@ -33,6 +32,9 @@ if (is404.status === 404) {
 const puppeteeredMatterportPage = new PuppeteeredMatterportPage(url);
 await puppeteeredMatterportPage.initialize();
 const modelData = puppeteeredMatterportPage.modelData;
+const modelTitle = modelData.name;
+
+const outputDirectory = options.output != null ? `${options.output}/${modelTitle}` : `./${modelTitle}`;
 
 if (fs.existsSync(outputDirectory)) {
     fs.rmdirSync(outputDirectory, {recursive: true, force: true});
@@ -50,7 +52,7 @@ const promises = [
     //downloadTextures(modelData, `${outputDirectory}/Textures`),
     //downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
     //downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
-    downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
+    //downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
 ];
 
 await Promise.all(promises);

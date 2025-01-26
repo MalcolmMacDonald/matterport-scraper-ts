@@ -101,17 +101,22 @@ async function buildGLTF(pbf, urlTemplate: string): Promise<Document> {
     const textureURLs = pbf.chunk.map(chunk => chunk.material_name);//.map(materialName => urlTemplate.replace('<texture>', materialName));
     const distinctTextureURLs = [...new Set(textureURLs)];
     const textures = [];
+    const texturePromises = [];
+    let textureCount = 0;
     for (const textureURL of distinctTextureURLs) {
         const materialIndex = textureURL.split('_').slice(-1)[0].split('.')[0];
-        console.log("Downloading texture for material index ", materialIndex);
         const fullTextureURL = urlTemplate.replace('<texture>', materialIndex);
-        const texture = doc.createTexture(textureURL)
-            .setImage(await downloadStitchedTextureData(fullTextureURL) as Uint8Array)
-            .setMimeType('image/jpeg');
-
-        textures[textureURL] = texture;
+        texturePromises.push(downloadStitchedTextureData(fullTextureURL).then(data => {
+            return doc.createTexture(textureURL)
+                .setImage(data)
+                .setMimeType('image/jpeg');
+        }).then(texture => {
+            textures[textureURL] = texture;
+            textureCount++;
+            console.log(`Downloaded texture for material index ${textureCount}/${distinctTextureURLs.length}`);
+        }));
     }
-
+    await Promise.all(texturePromises);
 
     pbf.chunk.forEach(chunk => {
         const chunkName = chunk.chunk_name;

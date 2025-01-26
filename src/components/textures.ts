@@ -8,6 +8,7 @@ const textureSize = 2048;
 const textureQuality: TextureQuality = "high";
 const textureChunkSize = 512;
 
+
 const asyncKey = 'textures';
 
 export async function downloadTextures(model: ModelData, texturesDirectory: string) {
