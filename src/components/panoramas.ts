@@ -5,6 +5,9 @@ import type {ModelData, TextureQuality} from "../matterport/model-data.ts";
 const panoramaSize = 32;
 const panoramaResolution: TextureQuality = 'low';
 
+/*const panoramaSize = 1024;
+const panoramaResolution: TextureQuality = 'high';*/
+
 export async function downloadPanoramas(model: ModelData, targetDirectory: string) {
 
     console.log("Downloading panoramas");
@@ -19,7 +22,7 @@ export async function downloadPanoramas(model: ModelData, targetDirectory: strin
     const texturePromises = [];
     for (let sweepIndex = 0; sweepIndex < locations.length; sweepIndex++) {
         const promises = [];
-        
+
         const image = new Jimp({width: panoramaSize * 4, height: panoramaSize * 3});
         const location = locations[sweepIndex].pano;
         const UUID = location.sweepUuid.replace(/-/g, '');
@@ -58,5 +61,5 @@ async function downloadCubemapTexture(image, index, imageURL) {
     const buffer = await response.arrayBuffer();
     const jimpImage = await Jimp.read(buffer);
     jimpImage.scale({mode: ResizeStrategy.NEAREST_NEIGHBOR, f: panoramaSize / 512} as ScaleOptions);
-    image.blit(jimpImage, positions[index][0], positions[index][1]);
+    image.composite(jimpImage, positions[index][0], positions[index][1]);
 }

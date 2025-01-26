@@ -47,7 +47,7 @@ export interface Texture {
     validUntil: Date;
 }
 
-export type TextureQuality = "2k" | "high" | "low";
+export type TextureQuality = "2k" | "4k" | "high" | "low";
 
 export interface FloorElement {
     id: string;

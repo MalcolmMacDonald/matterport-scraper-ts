@@ -1,7 +1,7 @@
 import {Command} from "commander";
 import {PuppeteeredMatterportPage} from "./matterport/puppeteered-matterport-page.ts";
 import fs from "fs";
-import {downloadContents} from "./components";
+import {downloadContents, downloadPanoramas} from "./components";
 import {downloadGLTF} from "./components/mesh-file.ts";
 
 
@@ -45,12 +45,12 @@ fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, 
 console.time("Entire scraping process");
 //const asyncLogTimer = setInterval(logAsyncStatus, 0);
 const promises = [
-    downloadGLTF(modelData, `${outputDirectory}/Model.glb`)
+    downloadGLTF(modelData, `${outputDirectory}/Model.glb`),
     //downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
     //downloadTextures(modelData, `${outputDirectory}/Textures`),
     //downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
     //downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
-    //downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
+    downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
 ];
 
 await Promise.all(promises);
