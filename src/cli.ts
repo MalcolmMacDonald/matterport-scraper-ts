@@ -1,14 +1,8 @@
 import {Command} from "commander";
 import {PuppeteeredMatterportPage} from "./matterport/puppeteered-matterport-page.ts";
 import fs from "fs";
-import {
-    downloadContents,
-    downloadOBJ,
-    downloadPanoramas,
-    downloadPreviewImage,
-    downloadSweeps,
-    downloadTextures
-} from "./components";
+import {downloadContents} from "./components";
+import {downloadGLTF} from "./components/mesh-file.ts";
 
 
 const program = new Command();
@@ -30,6 +24,12 @@ const outputDirectory = options.output != null ? `${options.output}/${id}` : `./
 
 const url = `https://my.matterport.com/show/?m=${id}`;
 
+const is404 = await fetch(url);
+if (is404.status === 404) {
+    console.error("Model not found");
+    process.exit(1);
+}
+
 const puppeteeredMatterportPage = new PuppeteeredMatterportPage(url);
 await puppeteeredMatterportPage.initialize();
 const modelData = puppeteeredMatterportPage.modelData;
@@ -45,11 +45,12 @@ fs.writeFileSync(`${outputDirectory}/ModelData.json`, JSON.stringify(modelData, 
 console.time("Entire scraping process");
 //const asyncLogTimer = setInterval(logAsyncStatus, 0);
 const promises = [
-    downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
-    downloadTextures(modelData, `${outputDirectory}/Textures`),
-    downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
-    downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
-    downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
+    downloadGLTF(modelData, `${outputDirectory}/Model.glb`)
+    //downloadOBJ(modelData, `${outputDirectory}/Model.obj`),
+    //downloadTextures(modelData, `${outputDirectory}/Textures`),
+    //downloadSweeps(modelData, `${outputDirectory}/SweepData.json`),
+    //downloadPreviewImage(modelData, `${outputDirectory}/PreviewImage.jpg`),
+    //downloadPanoramas(modelData, `${outputDirectory}/Panoramas`),
 ];
 
 await Promise.all(promises);

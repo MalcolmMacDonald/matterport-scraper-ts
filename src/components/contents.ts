@@ -10,7 +10,7 @@ export async function downloadContents(modelData: ModelData, targetDirectory: st
     function getFileSize(filePath: string) {
         return fs.existsSync(filePath) ? fs.statSync(filePath).size : 0;
     }
-    
+
 
     function getDirectorySize(directoryPath: string) {
         let size = 0;
@@ -27,7 +27,7 @@ export async function downloadContents(modelData: ModelData, targetDirectory: st
     fileSize += getDirectorySize(`${targetDirectory}/Textures`);
     fileSize += getDirectorySize(`${targetDirectory}/Panoramas`);
     fileSize += getFileSize(`${targetDirectory}/ModelData.json`);
-    fileSize += getFileSize(`${targetDirectory}/Model.obj`);
+    fileSize += getFileSize(`${targetDirectory}/Model.glb`);
     fileSize += getFileSize(`${targetDirectory}/PreviewImage.jpg`);
 
 
